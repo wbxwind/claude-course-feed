@@ -1,0 +1,31 @@
+name: Daily Claude Certification Feed
+
+on:
+  schedule:
+    # 10:00 AM PDT = 17:00 UTC  (PDT is UTC-7)
+    - cron: "0 17 * * *"
+  workflow_dispatch:
+    # Allows manual trigger from the GitHub Actions UI for testing
+
+jobs:
+  post-lesson:
+    name: Summarize & Post Lesson to Slack
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install anthropic
+
+      - name: Run summarize_and_post.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: python scripts/summarize_and_post.py

@@ -1,0 +1,73 @@
+# Day 5 — Mandatory Read
+**Date:** Tuesday, April 28, 2026
+**Topic:** Message Batches API — async processing, `custom_id`, failure handling, SLA planning
+**Source:** `claude-certified-architect/guide_en.MD`, lines 1016–1074
+**Time:** ~25 minutes (after finishing Building with the Claude API)
+
+---
+
+# Chapter 7: Message Batches API
+
+> Documentation: [Message Batches](https://platform.claude.com/docs/en/build-with-claude/message-batches)
+
+## 7.1 Overview
+
+The Message Batches API lets you submit batches of requests for asynchronous processing:
+
+| Attribute | Value |
+|---|---|
+| Savings | **50%** compared to synchronous calls |
+| Processing window | Up to **24 hours** (no latency SLA guarantee) |
+| Multi-turn tool calling | **Not supported** (one request = one response) |
+| Correlation | `custom_id` field to link request and response |
+
+## 7.2 When to Use Batch API vs Synchronous API
+
+| Task | API | Why |
+|---|---|---|
+| Pre-merge PR check | **Synchronous** | The developer is waiting; 24 hours is unacceptable |
+| Overnight tech-debt report | **Batch** | Result is needed by morning; 50% savings |
+| Weekly security audit | **Batch** | Not urgent; 50% savings |
+| Interactive code review | **Synchronous** | Immediate response required |
+| Processing 10,000 documents | **Batch** | Bulk processing; savings are significant |
+
+## 7.3 Using `custom_id`
+
+```json
+{
+  "custom_id": "doc-invoice-2024-001",
+  "params": {
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 1024,
+    "messages": [{"role": "user", "content": "Extract data from: ..."}]
+  }
+}
+```
+
+`custom_id` allows you to:
+- Link the result to the original document
+- On failure, re-submit only the failed documents
+- Avoid re-processing successful documents
+
+## 7.4 Handling Failures in Batches
+
+1. Submit a batch of 100 documents
+2. 95 succeed; 5 fail (context limit exceeded)
+3. Identify failures by `custom_id`
+4. Modify strategy (e.g., split long documents into chunks)
+5. Re-submit only the 5 failed documents
+
+## 7.5 SLA Planning
+
+If you need a result in 30 hours and the Batch API can take up to 24 hours:
+- Submission window: 30 - 24 = **6 hours**
+- Batches must be submitted no later than 24 hours before the deadline
+- For frequent submissions, split into 4-hour windows
+
+---
+
+## After reading, do:
+1. List 3 real-world tasks from your own work that would fit Batch API, and 3 that must stay synchronous.
+2. Remember the exam signal: Batch API is **not** suited for anything with multi-turn tool calls.
+3. Finish **Building with the Claude API** remaining modules → claim the cert.
+4. Log takeaways in `NOTES.md`.
