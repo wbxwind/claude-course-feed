@@ -21,7 +21,7 @@ import json
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-COURSE_START = date(2026, 4, 24)   # Day 1
+COURSE_START = date(2026, 5, 28)   # Day 1
 TOTAL_DAYS   = 21
 LESSONS_DIR  = os.path.join(os.path.dirname(__file__), "..", "lessons")
 
